@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Ethereal Gate</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #030305;
+            --card-bg: rgba(10, 10, 12, 0.85);
+            --text-main: #e0e0e0;
+            --accent-gold: #c5a059;
+            --accent-blood: #8a0303;
+            --border-color: #222;
+            --vignette: radial-gradient(circle at center, transparent 0%, #000000 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Crimson Pro', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        body.noscroll {
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* --- Night Atmosphere Elements --- */
+        .night-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--vignette);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .mist {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/fog.png');
+            opacity: 0.15;
+            z-index: 1;
+            animation: drift 60s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes drift {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* --- Landing Page Structure --- */
+        #launcher-view {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1rem;
+            transition: opacity 0.5s ease;
+            z-index: 5;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            letter-spacing: 0.2em;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(197, 160, 89, 0.3);
+            text-align: center;
+            border-bottom: 1px solid rgba(138, 3, 3, 0.5);
+            padding-bottom: 1.5rem;
+            line-height: 1.2;
+            animation: flicker 4s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            40% { opacity: 0.9; }
+            45% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 4rem;
+            letter-spacing: 0.1em;
+            font-style: italic;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        /* --- Cards --- */
+        .card-container {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+            width: 300px;
+            min-width: 280px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            touch-action: manipulation;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Corner Accents */
+        .card::before, .card::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            transition: all 0.5s ease;
+            opacity: 0.4;
+        }
+        .card::before {
+            top: 0;
+            left: 0;
+            border-top: 1px solid var(--accent-gold);
+            border-left: 1px solid var(--accent-gold);
+        }
+        .card::after {
+            bottom: 0;
+            right: 0;
+            border-bottom: 1px solid var(--accent-gold);
+            border-right: 1px solid var(--accent-gold);
+        }
+
+        /* Hover States */
+        .card:hover {
+            transform: translateY(-12px);
+            border-color: var(--accent-gold);
+            box-shadow: 0 20px 50px rgba(197, 160, 89, 0.15);
+        }
+        
+        .card.abyss:hover {
+            border-color: var(--accent-blood);
+            box-shadow: 0 20px 50px rgba(138, 3, 3, 0.25);
+        }
+
+        .card:hover::before, .card:hover::after {
+            width: 100%;
+            height: 100%;
+            opacity: 1;
+            border-width: 1px;
+        }
+
+        /* --- Sigils / Icons --- */
+        .sigil-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 2rem;
+            fill: none;
+            stroke: var(--accent-gold);
+            stroke-width: 1;
+            transition: all 0.6s ease;
+            opacity: 0.7;
+        }
+
+        .card.abyss .sigil-icon {
+            stroke: var(--accent-blood);
+            opacity: 0.8;
+        }
+
+        .card:hover .sigil-icon {
+            transform: scale(1.15) rotate(5deg);
+            opacity: 1;
+            filter: drop-shadow(0 0 12px var(--accent-gold));
+        }
+
+        .card.abyss:hover .sigil-icon {
+            filter: drop-shadow(0 0 15px var(--accent-blood));
+        }
+
+        .card h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            letter-spacing: 1px;
+        }
+
+        .card p {
+            font-size: 1rem;
+            color: #777;
+            line-height: 1.6;
+        }
+
+        /* --- Iframe Portal View --- */
+        #portal-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            visibility: hidden;
+        }
+
+        #portal-view.active {
+            opacity: 1;
+            pointer-events: auto;
+            visibility: visible;
+        }
+
+        header.portal-header {
+            flex: 0 0 60px;
+            background: #050505;
+            border-bottom: 1px solid var(--accent-blood);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            z-index: 10000;
+        }
+
+        .back-btn {
+            background: rgba(138, 3, 3, 0.05);
+            border: 1px solid var(--accent-blood);
+            color: var(--accent-blood);
+            font-family: 'Cinzel', serif;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-blood);
+            color: white;
+        }
+
+        .back-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .portal-title {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .iframe-wrapper {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        iframe.loaded {
+            opacity: 1;
+        }
+
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 2px solid #111;
+            border-top: 2px solid var(--accent-blood);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1;
+        }
+
+        .loader.hidden {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            #launcher-view { padding-top: 2rem; justify-content: flex-start; }
+            h1 { font-size: 1.8rem; }
+            .card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+    <div class="mist"></div>
+    <div class="night-overlay"></div>
+
+    <!-- Main Launcher Interface -->
+    <div id="launcher-view">
+        <h1>Sanctum of Shadows</h1>
+        <p class="subtitle">Invoke the sigils of the forgotten night</p>
+
+        <div class="card-container">
+            <!-- Option 1: The Eye of Providence -->
+            <div class="card" onclick="openPortal('https://kingsalmon6969-svg.github.io/Mysterious-creatures/', 'The Obsidian Dossier')">
+                <svg class="sigil-icon" viewBox="0 0 24 24">
+                    <path d="M12 4.5L2.5 20h19L12 4.5z" />
+                    <circle cx="12" cy="14.5" r="3" />
+                    <circle cx="12" cy="14.5" r="1" fill="currentColor" stroke="none" />
+                    <path d="M12 2v2M2 22l2-3M22 22l-2-3" stroke-dasharray="1 1"/>
+                </svg>
+                <h2>The Obsidian Dossier</h2>
+                <p>Uncover classified records of entities that defy explanation.</p>
+            </div>
+
+            <!-- Option 2: Pentacle of the Forgotten -->
+            <div class="card" onclick="openPortal('https://kingsalmon6969-svg.github.io/Booksgothic/', 'The Sacred Archives')">
+                <svg class="sigil-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9.5" />
+                    <path d="M12 3.5 L14.5 9 L20.5 9 L15.5 13 L17.5 19 L12 15.5 L6.5 19 L8.5 13 L3.5 9 L9.5 9 Z" />
+                </svg>
+                <h2>The Sacred Archives</h2>
+                <p>Ancient texts and forgotten manuscripts for the worthy.</p>
+            </div>
+
+            <!-- Option 3: Sigil of the Abyss -->
+            <div class="card abyss" onclick="openPortal('https://kingsalmon6969-svg.github.io/Creepypasta/', 'Echoes of the Forgotten')">
+                <svg class="sigil-icon" viewBox="0 0 24 24">
+                    <path d="M12 2v20" stroke-width="2"/>
+                    <path d="M5 8l14 0" />
+                    <path d="M5 16l14 0" />
+                    <path d="M7 21l10-18" />
+                    <path d="M17 21l-10-18" />
+                    <circle cx="12" cy="12" r="4" stroke-dasharray="2 1"/>
+                </svg>
+                <h2>Echoes of the Forgotten</h2>
+                <p>Whispers from the void. Stories not meant to be remembered.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Iframe Portal -->
+    <div id="portal-view">
+        <header class="portal-header">
+            <button class="back-btn" onclick="closePortal()">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                Back
+            </button>
+            <span class="portal-title" id="current-title">Artifact</span>
+        </header>
+        
+        <div class="iframe-wrapper">
+            <div class="loader" id="portal-loader"></div>
+            <iframe id="content-frame" src="" scrolling="yes" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Starfield Animation
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createStars() {
+            stars = [];
+            for(let i=0; i<150; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.5,
+                    opacity: Math.random(),
+                    speed: Math.random() * 0.05
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI*2);
+                ctx.fill();
+                
+                star.opacity += star.speed;
+                if(star.opacity > 1 || star.opacity < 0) star.speed *= -1;
+            });
+            requestAnimationFrame(drawStars);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        createStars();
+        drawStars();
+
+        // Portal Logic
+        const launcherView = document.getElementById('launcher-view');
+        const portalView = document.getElementById('portal-view');
+        const iframe = document.getElementById('content-frame');
+        const titleSpan = document.getElementById('current-title');
+        const loader = document.getElementById('portal-loader');
+
+        // Listen for iframe to finish loading
+        iframe.onload = function() {
+            loader.classList.add('hidden');
+            iframe.classList.add('loaded');
+        };
+
+        function openPortal(url, title) {
+            document.body.classList.add('noscroll');
+            titleSpan.textContent = title;
+            
+            // Reset loader and iframe state before loading new URL
+            loader.classList.remove('hidden');
+            iframe.classList.remove('loaded');
+            
+            iframe.src = url;
+            portalView.classList.add('active');
+        }
+
+        function closePortal() {
+            portalView.classList.remove('active');
+            setTimeout(() => {
+                iframe.src = '';
+                iframe.classList.remove('loaded');
+                document.body.classList.remove('noscroll');
+            }, 600);
+        }
+    </script>
+</body>
+</html>
